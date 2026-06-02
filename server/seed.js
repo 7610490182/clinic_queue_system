@@ -209,16 +209,24 @@ const adminUser = {
 
 async function seedDatabase() {
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
+    const mongoUri = process.env.MONGO_URI;
+    const isLocal = mongoUri && (mongoUri.includes('127.0.0.1') || mongoUri.includes('localhost'));
+    const connectOptions = {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      ssl: true,
       retryWrites: true,
       w: 'majority',
-      serverSelectionTimeoutMS: 5000,
-      tls: true,
-      tlsAllowInvalidCertificates: true
-    });
+      serverSelectionTimeoutMS: 5000
+    };
+
+    // Only enable TLS/SSL options for non-local (Atlas) connections
+    if (!isLocal) {
+      connectOptions.tls = true;
+      connectOptions.tlsAllowInvalidCertificates = true;
+      connectOptions.ssl = true;
+    }
+
+    await mongoose.connect(mongoUri, connectOptions);
     console.log('Connected to MongoDB');
 
     // Check if we should skip clearing (for safety)
