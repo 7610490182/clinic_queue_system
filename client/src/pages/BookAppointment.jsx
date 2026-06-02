@@ -142,12 +142,23 @@ const BookAppointment = () => {
     <div className="max-w-md mx-auto bg-white dark:bg-slate-800 rounded-lg shadow-md dark:shadow-slate-900 p-6 text-slate-900 dark:text-slate-100">
       <h1 className="text-2xl font-bold text-center mb-6 dark:text-white">📅 Book Appointment</h1>
 
-      <div className="mb-6 p-4 bg-gray-50 dark:bg-slate-700 rounded">
-        <h2 className="font-semibold dark:text-slate-100">{doctor.name}</h2>
-        <p className="text-gray-600 dark:text-slate-400">{doctor.specialization}</p>
-        <p className="text-sm text-gray-500 dark:text-slate-500">
-          Timings: {doctor.timings.start} - {doctor.timings.end}
-        </p>
+      <div className="mb-6 rounded overflow-hidden bg-gray-50 dark:bg-slate-700 shadow-sm">
+        <img
+          src={doctor.profileImage || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80'}
+          alt={doctor.name}
+          className="w-full h-52 object-cover"
+        />
+        <div className="p-4">
+          <h2 className="font-semibold text-lg dark:text-slate-100">{doctor.name}</h2>
+          <p className="text-gray-600 dark:text-slate-300">{doctor.specialization}</p>
+          {doctor.clinic && <p className="text-sm text-gray-500 dark:text-slate-400">{doctor.clinic}</p>}
+          <p className="text-sm text-gray-500 dark:text-slate-500 mt-2">
+            Timings: {doctor.timings.start} - {doctor.timings.end}
+          </p>
+          <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-2">
+            ⭐ {doctor.rating?.toFixed(1) || '4.5'} ({doctor.reviewCount || 0} reviews)
+          </p>
+        </div>
       </div>
 
       {!showPayment ? (

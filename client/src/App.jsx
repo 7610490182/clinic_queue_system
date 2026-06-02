@@ -43,11 +43,7 @@ function App() {
               <Route path="/login/doctor" element={<div className="container mx-auto px-4 py-8"><DoctorLogin /></div>} />
               <Route path="/login/admin" element={<div className="container mx-auto px-4 py-8"><AdminLogin /></div>} />
               <Route path="/register" element={<div className="container mx-auto px-4 py-8"><Register /></div>} />
-              <Route path="/doctors" element={
-                <ProtectedRoute>
-                  <div className="container mx-auto px-4 py-8"><DoctorList /></div>
-                </ProtectedRoute>
-              } />
+              <Route path="/doctors" element={<div className="container mx-auto px-4 py-8"><DoctorList /></div>} />
               <Route path="/book/:doctorId" element={
                 <ProtectedRoute>
                   <div className="container mx-auto px-4 py-8"><BookAppointment /></div>

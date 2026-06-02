@@ -2,23 +2,41 @@
 
 A full-stack MERN application for managing clinic appointments with real-time queue updates.
 
+## ✨ Latest Updates & Bug Fixes
+
+### Recently Fixed ✅
+- **MongoDB Connection**: Fixed SSL/TLS connection issues with retry logic
+- **Authentication Security**: Enhanced middleware with proper error handling
+- **Input Validation**: Added comprehensive validation for all user inputs
+- **Appointment Cancellation**: New feature to cancel appointments
+- **Payment Security**: Added user authorization checks for payment endpoints
+- **Error Logging**: Better error messages for debugging
+- **Socket.io URLs**: Fixed hardcoded URLs to use environment variables
+
+See [BUG_FIXES.md](BUG_FIXES.md) for detailed information on all fixes.
+See [ENHANCEMENTS.md](ENHANCEMENTS.md) for planned feature implementations.
+
 ## Features
 
-- **User Authentication**: JWT-based login/registration for patients and admins
-- **Role-based Access**: Separate dashboards for patients and administrators
-- **Doctor Management**: Add/edit doctors with specializations and availability
-- **Appointment Booking**: Book appointments with automatic token generation
-- **Real-time Queue**: Live queue updates using Socket.io
-- **Payment Integration**: Razorpay payment gateway integration
-- **Responsive Design**: Mobile-friendly UI with Tailwind CSS
+- ✅ **User Authentication**: JWT-based login/registration for patients, doctors, and admins
+- ✅ **Role-based Access**: Separate dashboards for different user roles
+- ✅ **Doctor Management**: Add/edit/delete doctors with specializations and availability
+- ✅ **Appointment Booking**: Book with automatic token generation and validation
+- ✅ **Appointment Cancellation**: Patients can cancel their appointments
+- ✅ **Real-time Queue**: Live queue updates using Socket.io
+- ✅ **Payment Integration**: Razorpay payment gateway (with mock mode for development)
+- ✅ **Input Validation**: Comprehensive validation on all inputs
+- ✅ **Responsive Design**: Mobile-friendly UI with Tailwind CSS
+- ✅ **Dark Mode**: Toggle between light and dark themes
 
 ## Tech Stack
 
-- **Frontend**: React.js, Tailwind CSS, Socket.io-client
+- **Frontend**: React.js, Tailwind CSS, Socket.io-client, Vite
 - **Backend**: Node.js, Express.js, Socket.io
 - **Database**: MongoDB with Mongoose
 - **Authentication**: JWT (JSON Web Tokens)
 - **Payment**: Razorpay
+- **Encryption**: bcryptjs for password hashing
 
 ## Project Structure
 
@@ -60,28 +78,44 @@ clinic-queue-system/
    npm install
    ```
 
-3. Create a `.env` file in the server directory:
+3. Create a `.env` file:
    ```bash
    cp .env.example .env
    ```
    
-   Then update `.env` with your actual values:
+   Update `.env` with your values:
    ```
    MONGO_URI=mongodb://localhost:27017/clinic-queue
-   JWT_SECRET=your_jwt_secret_key_here
+   JWT_SECRET=your_jwt_secret_key_here_make_it_long_and_secure
    RAZORPAY_KEY_ID=your_razorpay_key_id
    RAZORPAY_KEY_SECRET=your_razorpay_key_secret
    PORT=5000
+   CLIENT_URL=http://localhost:5173
    ```
 
-4. Start MongoDB service (if using local MongoDB)
+4. **Setup MongoDB**:
+   
+   **Option A - Local MongoDB** (Recommended for development):
+   ```bash
+   # Windows: Install from https://www.mongodb.com/try/download/community
+   # macOS: brew install mongodb-community && brew services start mongodb-community
+   # Linux: sudo apt-get install mongodb && sudo systemctl start mongodb
+   ```
+   
+   **Option B - MongoDB Atlas** (Cloud):
+   - Create account at https://www.mongodb.com/cloud/atlas
+   - Create a cluster and get connection string
+   - Update MONGO_URI in .env
+   - Whitelist your IP address
+   
+   See [LOCAL_SETUP.md](LOCAL_SETUP.md) for detailed instructions.
 
-5. Seed sample doctors (optional):
+5. Seed sample data (optional):
    ```bash
    npm run seed
    ```
 
-6. Start the backend server:
+6. Start the backend:
    ```bash
    npm run dev
    ```
@@ -185,15 +219,44 @@ Or register new accounts directly through the UI.
 
 ## Troubleshooting
 
-### MongoDB Connection Error
-- Ensure MongoDB is running: `mongod`
-- Verify MONGO_URI in .env is correct
-- For MongoDB Atlas, ensure IP whitelist includes your machine
+### "Cannot GET /api/..." - 404 Errors
+- ✅ Ensure backend server is running on port 5000
+- ✅ Check that MONGO_URI is correct and MongoDB is connected
+- ✅ Verify Vite proxy configuration in `client/vite.config.js`
+- ✅ Check that both backend and frontend are running
 
-### Razorpay Payment Failed
-- Verify RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are correct
-- Use Razorpay test keys for development
-- Check payment signature verification logic
+### MongoDB Connection Errors
+- ✅ Error "ECONNREFUSED": MongoDB not running. Start it: `mongod` or `brew services start mongodb-community`
+- ✅ Error "SSL/TLS": Check MongoDB Atlas IP whitelist or use local MongoDB
+- ✅ Error "Authentication failed": Verify credentials in MONGO_URI
+
+### Authentication Issues
+- ✅ "Invalid credentials": Check that seeded data exists or manually create account
+- ✅ "Token not found": Check localStorage for 'token' - may need to login again
+- ✅ "401 Unauthorized": Token expired or invalid - login again
+
+### Socket.io Not Connecting
+- ✅ Check browser console for connection errors
+- ✅ Verify VITE_SOCKET_URL in `.env`
+- ✅ Ensure backend Socket.io is running and CORS is configured
+- ✅ Check that client port (5173) matches CLIENT_URL in backend
+
+### Payment Issues
+- ✅ Razorpay error in development: Use test keys, not live keys
+- ✅ "Mock mode" message: Normal for development with dummy keys
+- ✅ Payment page blank: Check browser console for Razorpay script loading errors
+
+### Build/Compile Errors
+- ✅ "Cannot find module": Run `npm install` in both server and client directories
+- ✅ "Port already in use": Change PORT in .env or kill existing process
+- ✅ Clear node_modules: `rm -rf node_modules` and `npm install` (or use PowerShell on Windows)
+
+## Documentation
+
+- [BUG_FIXES.md](BUG_FIXES.md) - Detailed list of all bugs fixed
+- [ENHANCEMENTS.md](ENHANCEMENTS.md) - Guide for implementing remaining features
+- [LOCAL_SETUP.md](LOCAL_SETUP.md) - Detailed local development setup
+- [FEATURE_VERIFICATION.md](FEATURE_VERIFICATION.md) - Feature completeness report
 
 ## Real-time Features
 

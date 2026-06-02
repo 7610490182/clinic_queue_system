@@ -24,11 +24,12 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
               <>
                 <span className="text-sm md:text-base">👋 {user.name}</span>
 
+                <Link to="/doctors" className="hover:text-blue-100 transition text-sm md:text-base">
+                  👨‍⚕️ Find Doctors
+                </Link>
+
                 {user.role === 'patient' && (
                   <>
-                    <Link to="/doctors" className="hover:text-blue-100 transition text-sm md:text-base">
-                      👨‍⚕️ Find Doctors
-                    </Link>
                     <Link to="/my-appointments" className="hover:text-blue-100 transition text-sm md:text-base">
                       📅 My Appointments
                     </Link>
@@ -72,6 +73,9 @@ const Navbar = ({ darkMode, toggleDarkMode }) => {
               </>
             ) : (
               <>
+                <Link to="/doctors" className="hover:text-blue-100 transition font-semibold text-sm md:text-base">
+                  👨‍⚕️ Find Doctors
+                </Link>
                 <Link to="/login" className="hover:text-blue-100 transition font-semibold text-sm md:text-base">
                   🔐 Login
                 </Link>

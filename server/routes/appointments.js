@@ -174,10 +174,35 @@ router.post('/', auth, async (req, res) => {
   try {
     const { doctorId, date, time } = req.body;
 
+    // Validate required fields
+    if (!doctorId || !date || !time) {
+      return res.status(400).json({ message: 'Doctor ID, date, and time are required' });
+    }
+
+    // Validate date is not in the past
+    const appointmentDate = new Date(date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (appointmentDate < today) {
+      return res.status(400).json({ message: 'Cannot book appointments in the past' });
+    }
+
     // Check if doctor exists
     const doctor = await Doctor.findById(doctorId);
     if (!doctor) {
       return res.status(404).json({ message: 'Doctor not found' });
+    }
+
+    // Check for duplicate booking
+    const existingAppointment = await Appointment.findOne({
+      patient: req.user._id,
+      doctor: doctorId,
+      date: appointmentDate,
+      status: { $nin: ['cancelled', 'completed'] }
+    });
+
+    if (existingAppointment) {
+      return res.status(400).json({ message: 'You already have a booking with this doctor for this date' });
     }
 
     // Generate token number (auto-increment per day per doctor)
@@ -315,6 +340,11 @@ router.put('/:id/reschedule', auth, adminAuth, async (req, res) => {
 router.get('/queue/:doctorId/:date', auth, adminAuth, async (req, res) => {
   try {
     const { doctorId, date } = req.params;
+    
+    if (!doctorId || !date) {
+      return res.status(400).json({ message: 'Doctor ID and date are required' });
+    }
+    
     const startOfDay = new Date(date);
     startOfDay.setHours(0, 0, 0, 0);
     const endOfDay = new Date(date);
@@ -330,7 +360,48 @@ router.get('/queue/:doctorId/:date', auth, adminAuth, async (req, res) => {
 
     res.json(appointments);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error fetching queue:', error);
+    res.status(500).json({ message: 'Failed to fetch queue', error: error.message });
+  }
+});
+
+// Cancel appointment (patient or admin only)
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const appointment = await Appointment.findById(req.params.id);
+    
+    if (!appointment) {
+      return res.status(404).json({ message: 'Appointment not found' });
+    }
+
+    // Check authorization: patient can cancel own, admin can cancel any
+    if (req.user.role !== 'admin' && appointment.patient.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized to cancel this appointment' });
+    }
+
+    // Cannot cancel already completed or cancelled appointments
+    if (['completed', 'cancelled'].includes(appointment.status)) {
+      return res.status(400).json({ message: 'Cannot cancel a ' + appointment.status + ' appointment' });
+    }
+
+    appointment.status = 'cancelled';
+    await appointment.save();
+
+    // Notify all clients about cancellation
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('appointmentUpdate', {
+        appointmentId: appointment._id,
+        status: appointment.status,
+        tokenNumber: appointment.tokenNumber,
+        doctorId: appointment.doctor
+      });
+    }
+
+    res.json({ message: 'Appointment cancelled successfully', appointment });
+  } catch (error) {
+    console.error('Error cancelling appointment:', error);
+    res.status(500).json({ message: 'Failed to cancel appointment', error: error.message });
   }
 });
 

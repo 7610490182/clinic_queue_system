@@ -18,6 +18,7 @@ const AdminDashboard = () => {
     specialization: '',
     email: '',
     phone: '',
+    password: '',
     experience: '',
     startTime: '',
     endTime: '',
@@ -139,6 +140,7 @@ const AdminDashboard = () => {
         specialization: '',
         email: '',
         phone: '',
+        password: '',
         experience: '',
         startTime: '',
         endTime: '',
@@ -285,7 +287,7 @@ const AdminDashboard = () => {
                   setShowAddDoctor(prev => !prev);
                   if (!showAddDoctor) {
                     setEditingDoctor(null);
-                    setDoctorForm({ name: '', specialization: '', email: '', phone: '', experience: '', startTime: '', endTime: '', availableDays: [] });
+                    setDoctorForm({ name: '', specialization: '', email: '', phone: '', password: '', experience: '', startTime: '', endTime: '', availableDays: [] });
                   }
                 }}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
@@ -336,6 +338,16 @@ const AdminDashboard = () => {
                     className="px-3 py-2 border rounded"
                     required
                   />
+                  <input
+                    type="password"
+                    placeholder="Leave blank to keep default/password unchanged"
+                    value={doctorForm.password}
+                    onChange={(e) => setDoctorForm({ ...doctorForm, password: e.target.value })}
+                    className="px-3 py-2 border rounded"
+                  />
+                  <p className="text-xs text-gray-500 mt-1 col-span-full">
+                    When creating a new doctor, leave this blank to use the default password <strong>doctor123</strong>.
+                  </p>
                   <div className="flex space-x-2">
                     <input
                       type="time"
@@ -356,6 +368,9 @@ const AdminDashboard = () => {
                 </div>
                 <div className="mt-4">
                   <p className="mb-2 font-medium">Available Days:</p>
+                  <p className="text-sm text-gray-500 mb-2">
+                    Leave password blank when editing a doctor to preserve the existing login password.
+                  </p>
                   <div className="flex flex-wrap gap-2">
                     {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => (
                       <label key={day} className="flex items-center">
@@ -394,6 +409,7 @@ const AdminDashboard = () => {
                           specialization: doctor.specialization,
                           email: doctor.email,
                           phone: doctor.phone || '',
+                          password: '',
                           experience: doctor.experience || '',
                           startTime: doctor.timings?.start || '09:00',
                           endTime: doctor.timings?.end || '17:00',

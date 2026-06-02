@@ -9,6 +9,12 @@ const doctorSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  clinic: {
+    type: String
+  },
+  address: {
+    type: String
+  },
   email: {
     type: String,
     required: true,
@@ -17,6 +23,25 @@ const doctorSchema = new mongoose.Schema({
   phone: {
     type: String
   },
+  profileImage: {
+    type: String
+  },
+  rating: {
+    type: Number,
+    default: 0
+  },
+  reviewCount: {
+    type: Number,
+    default: 0
+  },
+  reviews: [
+    {
+      name: { type: String },
+      rating: { type: Number },
+      comment: { type: String },
+      imageUrl: { type: String }
+    }
+  ],
   experience: {
     type: Number,
     required: true

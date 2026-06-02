@@ -8,12 +8,13 @@ const MyAppointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedApt, setSelectedApt] = useState(null);
+  const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000';
 
   useEffect(() => {
     fetchAppointments();
 
     // Connect to socket for real-time updates
-    const newSocket = io('http://localhost:5000');
+    const newSocket = io(socketUrl);
 
     newSocket.on('appointmentUpdate', (data) => {
       // Update appointment status in real-time
@@ -33,7 +34,7 @@ const MyAppointments = () => {
     });
 
     return () => newSocket.close();
-  }, []);
+  }, [socketUrl]);
 
   const fetchAppointments = async () => {
     try {
@@ -84,6 +85,22 @@ const MyAppointments = () => {
       return predictWaitTime([], apt.doctor, 1);
     }
     return apt.estimatedWaitTime || 0;
+  };
+
+  const cancelAppointment = async (appointmentId) => {
+    if (!window.confirm('Are you sure you want to cancel this appointment?')) {
+      return;
+    }
+
+    try {
+      await axios.delete(`/api/appointments/${appointmentId}`);
+      // Refresh appointments list
+      fetchAppointments();
+      alert('Appointment cancelled successfully');
+    } catch (error) {
+      console.error('Error cancelling appointment:', error);
+      alert(error.response?.data?.message || 'Failed to cancel appointment');
+    }
   };
 
   if (loading) {
@@ -145,14 +162,24 @@ const MyAppointments = () => {
                   </div>
                 )}
 
-                {appointment.status === 'in_queue' && (
-                  <button
-                    onClick={() => setSelectedApt(appointment)}
-                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition"
-                  >
-                    📍 Check Queue Position
-                  </button>
-                )}
+                <div className="flex gap-3">
+                  {appointment.status === 'in_queue' && (
+                    <button
+                      onClick={() => setSelectedApt(appointment)}
+                      className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition"
+                    >
+                      📍 Check Queue Position
+                    </button>
+                  )}
+                  {!['completed', 'cancelled'].includes(appointment.status) && (
+                    <button
+                      onClick={() => cancelAppointment(appointment._id)}
+                      className="flex-1 bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition"
+                    >
+                      ❌ Cancel Appointment
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>

@@ -98,6 +98,10 @@ router.post('/verify', auth, async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({ message: 'Missing payment verification parameters' });
+    }
+
     const sign = razorpay_order_id + '|' + razorpay_payment_id;
     const expectedSign = crypto
       .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
@@ -117,6 +121,11 @@ router.post('/verify', auth, async (req, res) => {
 
       if (!appointment) {
         return res.status(404).json({ message: 'Appointment not found' });
+      }
+
+      // Verify user owns this appointment
+      if (appointment.patient.toString() !== req.user._id.toString()) {
+        return res.status(403).json({ message: 'Not authorized to verify payment for this appointment' });
       }
 
       appointment.status = 'confirmed';
