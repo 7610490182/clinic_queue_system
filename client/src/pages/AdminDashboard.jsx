@@ -83,7 +83,8 @@ const AdminDashboard = () => {
   const fetchDoctors = async () => {
     try {
       const res = await axios.get('/api/doctors');
-      setDoctors(res.data);
+      const data = res.data;
+      setDoctors(Array.isArray(data) ? data : (data?.doctors || []));
     } catch (error) {
       console.error('Error fetching doctors:', error);
     }

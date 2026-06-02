@@ -15,7 +15,9 @@ const DoctorList = () => {
   const fetchDoctors = async () => {
     try {
       const res = await axios.get('/api/doctors');
-      setDoctors(res.data);
+      const data = res.data;
+      // Ensure we always store an array
+      setDoctors(Array.isArray(data) ? data : (data?.doctors || []));
     } catch (error) {
       console.error('Error fetching doctors:', error);
     } finally {
