@@ -9,6 +9,9 @@ import PatientLogin from './pages/PatientLogin';
 import DoctorLogin from './pages/DoctorLogin';
 import AdminLogin from './pages/AdminLogin';
 import Register from './pages/Register';
+import RegisterSelector from './pages/RegisterSelector';
+import PatientRegister from './pages/PatientRegister';
+import DoctorRegister from './pages/DoctorRegister';
 import DoctorList from './pages/DoctorList';
 import BookAppointment from './pages/BookAppointment';
 import MyAppointments from './pages/MyAppointments';
@@ -42,7 +45,10 @@ function App() {
               <Route path="/login/patient" element={<div className="container mx-auto px-4 py-8"><PatientLogin /></div>} />
               <Route path="/login/doctor" element={<div className="container mx-auto px-4 py-8"><DoctorLogin /></div>} />
               <Route path="/login/admin" element={<div className="container mx-auto px-4 py-8"><AdminLogin /></div>} />
-              <Route path="/register" element={<div className="container mx-auto px-4 py-8"><Register /></div>} />
+              <Route path="/register" element={<div className="container mx-auto px-4 py-8"><RegisterSelector /></div>} />
+              <Route path="/register/patient" element={<div className="container mx-auto px-4 py-8"><PatientRegister /></div>} />
+              <Route path="/register/doctor" element={<div className="container mx-auto px-4 py-8"><DoctorRegister /></div>} />
+              <Route path="/register/admin" element={<div className="container mx-auto px-4 py-8"><Register /></div>} />
               <Route path="/doctors" element={<div className="container mx-auto px-4 py-8"><DoctorList /></div>} />
               <Route path="/book/:doctorId" element={
                 <ProtectedRoute>
